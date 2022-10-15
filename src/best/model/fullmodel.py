@@ -11,7 +11,7 @@ class Ecosystem:
     def addSpecies(self, name, indepGR = 0.0, depGR = dict(), population = 0.0):
         newSpecies = Species(name, indepGR, depGR, population)
         self.allSpecies.append(newSpecies)
-    
+
     def fullModel(self):
         r = np.matrix([
             [animal.indepGrowthRate] for animal in self.allSpecies
@@ -25,7 +25,7 @@ class Ecosystem:
         def model(self, X: list[Species], t):
             dXdt = [animal.totalRate() for animal in X]
             return dXdt
-        
+
         # number of time points
         n = 40001
 
@@ -36,8 +36,7 @@ class Ecosystem:
             # span for next time step
             tspan = [t[i-1],t[i]]
             # solve for next step
-            #z will be of type array[len[tspan], len[seld.allSpecies]]. In other words, the entry ij will be the population of j at time t
-            z = odeint(model, self.allSpecies, tspan)
+            z = odeint(model, [species.population for species in self.allSpecies], tspan)
             # next initial condition
             #z[0] is equal to
             for i, newP in enumerate(z[1]):
