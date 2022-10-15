@@ -18,3 +18,7 @@ class Species:
 
     def __hash__(self) -> int:
         return hash(self.name)
+
+    def __repr__(self) -> str:
+        rates = {species.name: rate for species, rate in self.depGrowthRate.items()}
+        return f'Species(name={self.name!r}, indepGrowthRate={self.indepGrowthRate!r}, depGrowthRate={rates!r}, population={self.population!r})'

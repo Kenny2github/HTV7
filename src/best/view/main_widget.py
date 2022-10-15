@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import os
 from typing import Union
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QPersistentModelIndex
 from PySide6.QtWidgets import (
@@ -6,7 +7,7 @@ from PySide6.QtWidgets import (
     QSlider, QProgressDialog, QPushButton
 )
 
-from ..model.fullmodel import Ecosystem
+from ..model.fullmodel import Ecosystem, load_ecosystem
 from ..model.species import Species
 from .population_input import SpeciesDisplay
 from .utils import QHLine
@@ -40,57 +41,18 @@ class PredictionModel(QAbstractTableModel):
 
 class MainWidget(QWidget):
 
-    # species1 = Species('Species1', 1.0, {})
-    # species2 = Species('Species2', 0.72, {})
-    # species3 = Species('Species3', 1.53, {})
-    # species4 = Species('Species4', 1.27, {})
+    ecosystems = {}
+    for path in os.listdir('ecosystems'):
+        if not path.endswith('.json'):
+            continue
+        system = load_ecosystem(f'ecosystems/{path}')
+        ecosystems[system.name] = system
+    print(ecosystems)
 
-    # species1.depGrowthRate.update({
-    #     species1: -1.0,
-    #     species2: -1.09,
-    #     species3: -1.52,
-    # })
-    # species2.depGrowthRate.update({
-    #     species2: -0.72,
-    #     species3: -0.3168,
-    #     species4: -0.9792,
-    # })
-    # species3.depGrowthRate.update({
-    #     species1: -3.5649,
-    #     species3: -1.53,
-    #     species4: -0.7191,
-    # })
-    # species4.depGrowthRate.update({
-    #     species1: -1.5367,
-    #     species2: -0.6477,
-    #     species3: -0.4445,
-    #     species4: -1.27,
-    # })
-
-    snake = Species('Snake', -1.0, {})
-    squirrel = Species('Squirrel', -0.5, {})
-    nuts = Species('Nuts', 1.0, {})
-    snake.depGrowthRate.update({
-        # snake: -1.0,
-        # effect from squirrel is done in squirrel
-    })
-    squirrel.depGrowthRate.update({
-        # squirrel: -0.5,
-        snake: -1.0,
-        # effect from nuts is done in nuts
-    })
-    nuts.depGrowthRate.update({
-        nuts: -1.0,
-        squirrel: -1.0,
-    })
-
-    ecosystems = {
-        # 'Test': Ecosystem('Test', [species1, species2, species3, species4]),
-        'Oak Tree': Ecosystem('Oak Tree', [nuts, squirrel, snake]),
-    }
-
-    # del species1, species2, species3, species4
-    del snake, squirrel, nuts
+    try:
+        del system, path
+    except NameError:
+        pass
 
     @property
     def selectedEcosystem(self) -> Ecosystem:

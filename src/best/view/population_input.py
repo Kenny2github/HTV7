@@ -115,7 +115,7 @@ class SpeciesDisplay(QDialog):
         validator = QDoubleValidator()
         validator.setBottom(0.0)
         self.populationInput.setValidator(validator)
-        self.populationInput.textEdited.connect(self.checkPopulation) # type: ignore
+        self.populationInput.textChanged.connect(self.checkPopulation) # type: ignore
 
         self.addButton = QPushButton('Add')
         self.addButton.clicked.connect(self.addSpecies) # type: ignore
@@ -148,6 +148,7 @@ class SpeciesDisplay(QDialog):
         chosenSpecies.population = float(self.populationInput.text())
         self.populationModel.push(chosenSpecies)
         self.populationView.resizeColumnsToContents()
+        self.populationInput.setText('')
         if not self.speciesModel.species:
             self.acceptButton.setEnabled(True)
             self.speciesSelect.setEnabled(False)

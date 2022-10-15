@@ -1,4 +1,6 @@
+import json
 from dataclasses import dataclass, field
+from typing import TypedDict
 import numpy as np
 from scipy.integrate import odeint
 
@@ -60,3 +62,18 @@ class Ecosystem:
             species.population = population[n-1]
         self.lastSimulation = populations
         self.lastT = t
+
+class EcosystemJSON(TypedDict):
+    name: str
+    species_names: list[str]
+    r: list[float]
+    A: list[list[float]]
+
+def load_ecosystem(filename: str) -> Ecosystem:
+    with open(filename, 'r') as f:
+        data: EcosystemJSON = json.load(f)
+    species = [Species(name, ri, {}) for name, ri in zip(data['species_names'], data['r'])]
+    for row, prey in zip(data['A'], species):
+        for col, predator in zip(row, species):
+            prey.depGrowthRate[predator] = col
+    return Ecosystem(data['name'], species)
