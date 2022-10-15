@@ -22,8 +22,14 @@ class Ecosystem:
             for animal in self.allSpecies
         ])
         #model defines the ODE system
-        def model(self, X: list[Species], t):
-            dXdt = [animal.totalRate() for animal in X]
+        def model(X, t):
+            dXdt = [
+                population * (species.indepGrowthRate + sum(
+                    pop * species.depGrowthRate.get(prey, 0.0)
+                    for pop, prey in zip(X, self.allSpecies)
+                ))
+                for population, species in zip(X, self.allSpecies)
+            ]
             return dXdt
 
         # number of time points
@@ -39,5 +45,5 @@ class Ecosystem:
             z = odeint(model, [species.population for species in self.allSpecies], tspan)
             # next initial condition
             #z[0] is equal to
-            for i, newP in enumerate(z[1]):
-                self.allSpecies[i].population = newP
+            for species, newP in zip(self.allSpecies, z[1]):
+                species.population = newP

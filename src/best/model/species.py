@@ -10,7 +10,3 @@ class Species:
     depGrowthRate: dict[Species, float]
     # population in terms of thousands
     population: float
-
-    # an implimentation of the Lotka-Volterra model
-    def totalRate(self):
-        return self.population * (self.indepGrowthRate + sum(key.population * self.depGrowthRate[key] for key in self.depGrowthRate))
