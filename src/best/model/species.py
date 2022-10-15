@@ -4,13 +4,14 @@ from dataclasses import dataclass
 @dataclass
 class Species:
     name: str
-    # reproduction rate
-    # population(t + 1) = population(t) * (1 + reproduction) * (1 - death)
-    reproduction: float
-    natDeath: float
-    # mapping of species it preys on to rate of eating
-    consumationRate: float
-    prey: dict[Species, float]
-    
-    population: int = 0
+    # growth rate of the population ignoring the effect of all other species in the biome
+    indepGrowthRate: float
+    # mapping of how other species affect the population
+    depGrowthRate: dict[Species, float]
+    # population in terms of thousands
+    population: float = 0.0
 
+    # an implimentation of the Lotka-Volterra model
+    def model(self, X: list, t):
+        dXdt = self.population * (self.indepGrowthRate + sum(key.population * self.depGrowthRate[key] for key in self.depGrowthRate))
+        return dXdt

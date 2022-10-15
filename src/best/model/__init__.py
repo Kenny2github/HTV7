@@ -6,10 +6,3 @@ from species import Species
 @dataclass
 class Biome:
     species: list[Species]
-    naturalDisasters: list[NaturalDisaster]
-
-@dataclass
-class NaturalDisaster:
-    name: str
-    occuranceRate: float
-    effectOnSpecies: dict[Species, float]
