@@ -14,13 +14,13 @@ class NaturalDisaster:
 
 @dataclass
 class Species:
+    name: str
     # reproduction rate
-    # population(t+1) = population(t) * (1 + reproduction)
+    # population(t + 1) = population(t) * (1 + reproduction) * (1 - death)
     reproduction: float
+    natDeath: float
     # mapping of species it preys on to rate of eating
+    consumationRate: float
     prey: dict[Species, float]
-
-@dataclass
-class Ecosystem:
-    # mapping of species to its population
-    population: dict[Species, int]
+    
+    population: int = 0
