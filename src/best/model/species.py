@@ -9,4 +9,12 @@ class Species:
     # mapping of how other species affect the population
     depGrowthRate: dict[Species, float]
     # population in terms of thousands
-    population: float
+    population: float = 0.0
+
+    def __eq__(self, other: Species) -> bool:
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return self.name == other.name
+
+    def __hash__(self) -> int:
+        return hash(self.name)
