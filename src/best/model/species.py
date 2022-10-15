@@ -9,9 +9,8 @@ class Species:
     # mapping of how other species affect the population
     depGrowthRate: dict[Species, float]
     # population in terms of thousands
-    population: float = 0.0
+    population: float
 
     # an implimentation of the Lotka-Volterra model
-    def model(self, X: list, t):
-        dXdt = self.population * (self.indepGrowthRate + sum(key.population * self.depGrowthRate[key] for key in self.depGrowthRate))
-        return dXdt
+    def totalRate(self):
+        return self.population * (self.indepGrowthRate + sum(key.population * self.depGrowthRate[key] for key in self.depGrowthRate))
