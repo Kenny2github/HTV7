@@ -1,8 +1,10 @@
 import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QLabel, QWidget
+    QApplication, QMainWindow, QVBoxLayout, QWidget
 )
+
+from .main_widget import MainWidget
 
 class BestWindow(QMainWindow):
     def __init__(self) -> None:
@@ -11,7 +13,7 @@ class BestWindow(QMainWindow):
 
         widget = QWidget(self)
         layout = QVBoxLayout(widget)
-        layout.addWidget(QLabel('Hello World!'), Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(MainWidget(), Qt.AlignmentFlag.AlignCenter)
         widget.setLayout(layout)
 
         self.setCentralWidget(widget)
