@@ -3,22 +3,27 @@ from dataclasses import dataclass
 
 @dataclass
 class Biome:
-    species: list[Species]
-    naturalDisasters: list[NaturalDisaster]
-
-@dataclass
-class NaturalDisaster:
     name: str
-    occuranceRate: float
-    effectOnSpecies: dict[Species, float]
+    species: list[Species]
 
 @dataclass
 class Species:
+    name: str
     # reproduction rate
     # population(t+1) = population(t) * (1 + reproduction)
     reproduction: float
     # mapping of species it preys on to rate of eating
     prey: dict[Species, float]
+
+    population: int = 0
+
+    def __eq__(self, other: Species) -> bool:
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return self.name == other.name
+
+    def __hash__(self) -> int:
+        return hash(self.name)
 
 @dataclass
 class Ecosystem:
