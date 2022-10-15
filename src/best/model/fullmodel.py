@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.integrate import odeint
 
-from species import Species
+from .species import Species
 
 @dataclass
 class Ecosystem:
