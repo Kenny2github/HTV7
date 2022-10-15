@@ -134,7 +134,7 @@ class MainWidget(QWidget):
             self.simulate()
         for (i, population), color in zip(
             enumerate(self.selectedEcosystem.lastSimulation),
-            cycle(['b-', 'r-', 'b--', 'r--'])
+            cycle(['b-', 'r-', 'b--', 'r--', 'b.', 'r.'])
         ):
             plt.plot(self.selectedEcosystem.lastT, population, color, label=f'x{i}(t)')
         plt.ylabel('values')
