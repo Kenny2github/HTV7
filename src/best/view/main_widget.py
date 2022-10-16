@@ -137,7 +137,8 @@ class MainWidget(QWidget):
             cycle(['b-', 'r-', 'b--', 'r--', 'b.', 'r.'])
         ):
             plt.plot(self.selectedEcosystem.lastT, population, color, label=f'x{i}(t)')
-        plt.ylabel('values')
-        plt.xlabel('time')
+        plt.title('Population over time')
+        plt.ylabel('Populations')
+        plt.xlabel('Time (decades)')
         plt.legend(loc='best')
         plt.show()
