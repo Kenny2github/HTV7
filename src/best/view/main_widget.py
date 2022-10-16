@@ -1,11 +1,11 @@
-from collections import Counter
 from dataclasses import dataclass, field
 import os
+from time import time
 from typing import Union
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QPersistentModelIndex
 from PySide6.QtWidgets import (
     QWidget, QComboBox, QGridLayout, QLabel, QTableView,
-    QSlider, QPushButton
+    QSlider, QPushButton, QMessageBox
 )
 
 from ..model.fullmodel import Ecosystem, load_ecosystem
@@ -14,6 +14,8 @@ from ..model.tweak import findBetterInitP
 from .population_input import SpeciesDisplay
 from .utils import QHLine
 from ..model.recommendations import giveRecs
+
+GIVE_UP_TIME = 1.0
 
 @dataclass
 class PredictionModel(QAbstractTableModel):
@@ -113,6 +115,8 @@ class MainWidget(QWidget):
         self.setLayout(layout)
 
     def setPopulations(self) -> None:
+        self.ecosystems[self.ecosystemSelect.currentText()] \
+            = self.selectedEcosystem.clone()
         self.dialog = SpeciesDisplay(self.selectedEcosystem)
         self.dialog.exec()
         if self.dialog.result() == self.dialog.Accepted:
@@ -125,21 +129,22 @@ class MainWidget(QWidget):
         testEcosys = self.selectedEcosystem.clone()
         self.selectedEcosystem.fullModel(timeSteps, resolution)
         allSpecies = self.selectedEcosystem.allSpecies
-        recommendations: Counter[Species] = Counter()
-        for species in allSpecies:
-            recommendations.update(giveRecs(species))
-        print(recommendations)
-        def instruction(value: float) -> str:
-            if value > 0:
-                return 'Import'
-            if value < 0:
-                return 'Cull'
-            return 'None needed'
+
+        recommending = findBetterInitP(self.selectedEcosystem, testEcosys)
+        start = time()
+        for _ in recommending:
+            if time() - start > GIVE_UP_TIME:
+                recommending.send(True) # stop now
+                QMessageBox.warning(self, 'Anti-Extinction Efforts Failed',
+                                    'Failed to find a population change that '
+                                    'prevents all extinctions. Recommendations '
+                                    'may be nonsensical.')
+                break
+        recommendations = recommending.value
         self.predictionView.setModel(PredictionModel(
             [species.name for species in self.selectedEcosystem.allSpecies],
             [species.population for species in self.selectedEcosystem.allSpecies],
-            # [instruction(recommendations[species]) for species in allSpecies],
-            findBetterInitP(self.selectedEcosystem, testEcosys),
+            [str(recommendations[species]) for species in allSpecies],
         ))
         self.predictionView.resizeColumnsToContents()
 
