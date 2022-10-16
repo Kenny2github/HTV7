@@ -6,6 +6,8 @@ from scipy.integrate import odeint
 
 from .species import Species
 
+EXTINCTION_THRESHOLD = 1.0e-3
+
 @dataclass
 class Ecosystem:
     name: str
@@ -48,12 +50,12 @@ class Ecosystem:
         self.lastSimulation = populations
         self.lastT = t
 
-    def extinction(self) -> list[int]:
-        extIndex = []
-        for i, trend in enumerate(self.lastSimulation):
-            if min(trend) < 0.001:
-                extIndex.append(i)
-        return extIndex
+    def extinctions(self) -> list[Species]:
+        return [
+            species
+            for species, trend in zip(self.allSpecies, self.lastSimulation)
+            if (trend[len(trend) * 4 // 5:] < EXTINCTION_THRESHOLD).all()
+        ]
 
     def clone(self):
         return Ecosystem(self.name, [species.clone() for species in self.allSpecies])
