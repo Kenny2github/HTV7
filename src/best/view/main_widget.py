@@ -120,11 +120,12 @@ class MainWidget(QWidget):
     def simulate(self) -> None:
         timeSteps = self.timeSlider.value()
         resolution = self.resSlider.value()
+        testEcosys = self.selectedEcosystem.clone()
         self.selectedEcosystem.fullModel(timeSteps, resolution)
         self.predictionView.setModel(PredictionModel(
             [species.name for species in self.selectedEcosystem.allSpecies],
             [species.population for species in self.selectedEcosystem.allSpecies],
-            findBetterInitP(self.selectedEcosystem),
+            findBetterInitP(self.selectedEcosystem, testEcosys),
         ))
         self.predictionView.resizeColumnsToContents()
 
