@@ -11,6 +11,7 @@ from ..model.fullmodel import Ecosystem, load_ecosystem
 from ..model.species import Species
 from .population_input import SpeciesDisplay
 from .utils import QHLine
+from ..model.recommendations import giveRecs
 
 @dataclass
 class PredictionModel(QAbstractTableModel):
