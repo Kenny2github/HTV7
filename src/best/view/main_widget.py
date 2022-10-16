@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 
 from ..model.fullmodel import Ecosystem, load_ecosystem
 from ..model.species import Species
+from ..model.tweak import findBetterInitP
 from .population_input import SpeciesDisplay
 from .utils import QHLine
 
@@ -123,7 +124,7 @@ class MainWidget(QWidget):
         self.predictionView.setModel(PredictionModel(
             [species.name for species in self.selectedEcosystem.allSpecies],
             [species.population for species in self.selectedEcosystem.allSpecies],
-            [0 for _ in self.selectedEcosystem.allSpecies],
+            findBetterInitP(self.selectedEcosystem),
         ))
         self.predictionView.resizeColumnsToContents()
 

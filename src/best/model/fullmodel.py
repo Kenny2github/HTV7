@@ -63,6 +63,36 @@ class Ecosystem:
         self.lastSimulation = populations
         self.lastT = t
 
+    def extinction(self) -> list[int]:
+        extIndex = []
+        for i, trend in enumerate(self.lastSimulation):
+            if min(trend) < 0.001:
+                extIndex.append(i)
+        return extIndex
+
+    # def findOptimalInitP(self, timesteps: int = 80, resolution: int = 40001, var = None):
+        # simEco = Ecosystem(self.name, self.allSpecies)
+        
+        # # generates full list of variations to apply to initialP if never done so before
+        # if var == None:
+        #     var = [[0.0 for _ in range(len(self.allSpecies))] for _ in range(3 ** len(self.allSpecies))]
+        #     for i in range(len(self.allSpecies)):
+        #         for j in range(3 ** len(self.allSpecies)):
+        #             var[j][len(self.allSpecies) - 1 - i] = 0.0 if (j // (len(self.allSpecies) ** i)) % 3 == 0 else (-0.05 if (j // (len(self.allSpecies) ** i)) % 3 == 1 else 0.05)
+        
+        # for i in range(3 ** len(self.allSpecies)):
+        #     extinct = False
+        #     for j in range(len(self.allSpecies)):
+        #         simEco.allSpecies[j].population += var[i][j]
+        #     simEco.fullModel(timesteps, resolution)
+        #     for trend in simEco.lastSimulation:
+        #         if trend.min() < 0.001:
+        #             extinct = True
+
+
+        
+
+
 class EcosystemJSON(TypedDict):
     name: str
     species_names: list[str]
