@@ -134,22 +134,27 @@ class SpeciesDisplay(QDialog):
 
         self.setLayout(layout)
 
+        self.populationInput.setFocus()
+
     def checkPopulation(self, text: str) -> None:
         try:
             float(text)
         except ValueError:
             self.addButton.setEnabled(False)
         else:
-            self.addButton.setEnabled(True)
+            if self.speciesModel.species:
+                self.addButton.setEnabled(True)
 
     def addSpecies(self) -> None:
-        choice: int = self.speciesSelect.currentIndex()
-        chosenSpecies = self.speciesModel.pop(choice)
-        chosenSpecies.population = float(self.populationInput.text())
-        self.populationModel.push(chosenSpecies)
-        self.populationView.resizeColumnsToContents()
+        if self.speciesModel.species:
+            choice: int = self.speciesSelect.currentIndex()
+            chosenSpecies = self.speciesModel.pop(choice)
+            chosenSpecies.population = float(self.populationInput.text())
+            self.populationModel.push(chosenSpecies)
+            self.populationView.resizeColumnsToContents()
         self.populationInput.setText('')
         if not self.speciesModel.species:
             self.acceptButton.setEnabled(True)
             self.speciesSelect.setEnabled(False)
             self.addButton.setEnabled(False)
+            self.populationInput.setEnabled(False)
