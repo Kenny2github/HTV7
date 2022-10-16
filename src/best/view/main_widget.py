@@ -25,10 +25,12 @@ class PredictionModel(QAbstractTableModel):
 
     def __post_init__(self) -> None:
         super().__init__()
+        self.predictions[:] = [round(x, 3) for x in self.predictions]
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...) -> str:
         if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
-            return ['Species', 'Predicted Population (1000s)', 'Recommended Change'][section]
+            return ['Species', 'Predicted Population (1000s)',
+                    'Recommended Adjustment (1000s)'][section]
         return super().headerData(section, orientation, role)
 
     def data(self, index: Union[QModelIndex, QPersistentModelIndex],
