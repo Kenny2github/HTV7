@@ -12,7 +12,7 @@ class Species:
     population: float = 0.0
 
     def clone(self):
-        return Species(self.name, self.indepGrowthRate, {species: a for species, a in self.depGrowthRate.items()}, self.population)
+        return Species(self.name, self.indepGrowthRate, self.depGrowthRate.copy(), self.population)
 
     def __eq__(self, other: Species) -> bool:
         if not isinstance(other, type(self)):
