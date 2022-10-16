@@ -1,15 +1,23 @@
+from collections import Counter
 from .species import Species
-from .fullmodel import Ecosystem
 
-def giveRecs(S: Species, threshold:int, Eco: Ecosystem):
-    preds = []
-    preys = []
-    if(S.population<threshold):
-        for s, rate in S.depGrowthRate.items():
-            if (rate < 0):
-                preds = preds + s
-            if(rate >0):
-                preys= preys+s
-    Rec = "Import/ breed/ feed the preys:" + [x for x in preys] + "and/or remove predsators:" + [y for y in preds]
-    return Rec
+EXTINCTION_THRESHOLD = 1.0e-3
+OVERPOPULATION_THRESHOLD = 1.0e12
 
+def saveSpecies(species: Species) -> Counter[Species]:
+    if species.population >= EXTINCTION_THRESHOLD:
+        return Counter()
+    return Counter(
+        {s: 1 if rate > 0 else -1 for s, rate in species.depGrowthRate.items()
+         if rate != 0} | {species: 1}
+    )
+
+def preventOverpopulation(species: Species) -> Counter[Species]:
+    if species.population < OVERPOPULATION_THRESHOLD:
+        return Counter()
+    return Counter({species: -10000000})
+
+def giveRecs(species: Species) -> Counter[Species]:
+    recs = saveSpecies(species)
+    recs.update(preventOverpopulation(species))
+    return recs

@@ -1,10 +1,11 @@
+from collections import Counter
 from dataclasses import dataclass, field
 import os
 from typing import Union
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QPersistentModelIndex
 from PySide6.QtWidgets import (
     QWidget, QComboBox, QGridLayout, QLabel, QTableView,
-    QSlider, QProgressDialog, QPushButton
+    QSlider, QPushButton
 )
 
 from ..model.fullmodel import Ecosystem, load_ecosystem
@@ -17,7 +18,7 @@ from ..model.recommendations import giveRecs
 class PredictionModel(QAbstractTableModel):
     species: list[str] = field(default_factory=list)
     predictions: list[float] = field(default_factory=list)
-    recommendations: list[float] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         super().__init__()
@@ -48,7 +49,6 @@ class MainWidget(QWidget):
             continue
         system = load_ecosystem(f'ecosystems/{path}')
         ecosystems[system.name] = system
-    print(ecosystems)
 
     try:
         del system, path
@@ -114,17 +114,29 @@ class MainWidget(QWidget):
     def setPopulations(self) -> None:
         self.dialog = SpeciesDisplay(self.selectedEcosystem)
         self.dialog.exec()
-        self.simulateButton.setEnabled(True)
-        self.plotButton.setEnabled(True)
+        if self.dialog.result() == self.dialog.Accepted:
+            self.simulateButton.setEnabled(True)
+            self.plotButton.setEnabled(True)
 
     def simulate(self) -> None:
         timeSteps = self.timeSlider.value()
         resolution = self.resSlider.value()
         self.selectedEcosystem.fullModel(timeSteps, resolution)
+        allSpecies = self.selectedEcosystem.allSpecies
+        recommendations: Counter[Species] = Counter()
+        for species in allSpecies:
+            recommendations.update(giveRecs(species))
+        print(recommendations)
+        def instruction(value: float) -> str:
+            if value > 0:
+                return 'Import'
+            if value < 0:
+                return 'Cull'
+            return 'None needed'
         self.predictionView.setModel(PredictionModel(
-            [species.name for species in self.selectedEcosystem.allSpecies],
-            [species.population for species in self.selectedEcosystem.allSpecies],
-            [0 for _ in self.selectedEcosystem.allSpecies],
+            [species.name for species in allSpecies],
+            [species.population for species in allSpecies],
+            [instruction(recommendations[species]) for species in allSpecies],
         ))
         self.predictionView.resizeColumnsToContents()
 
